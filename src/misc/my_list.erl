@@ -1,6 +1,6 @@
 -module(my_list).
 
--export([distinct/1, member_of/2, reverse/1]).
+-export([distinct/1, member_of/2, reverse/1, sort/1]).
 
 %% distinct values api
 
@@ -37,3 +37,23 @@ reverse([H | T], Temp) ->
 
 reverse([], Temp) ->
   Temp.
+
+%% sort api
+
+sort([H | T]) ->
+  sort(T, H, [], []);
+
+sort([]) ->
+  [].
+
+sort([], Current, Temp, [H | T]) ->
+  sort(T, H, [Current | Temp], []);
+
+sort([H | T], Current, Temp, Leftover) ->
+  if H =< Current -> sort(T, Current, Temp, [H | Leftover]);
+    H > Current -> sort(T, H, Temp, [Current | Leftover])
+  end;
+
+sort([], Current, Temp, []) ->
+  [Current | Temp].
+
