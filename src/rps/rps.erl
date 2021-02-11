@@ -4,13 +4,15 @@
 
 -export([play/2]).
 
+-define(WINNING_SCORE, 3).
+
 play(P1_Input, P2_Input) when length(P1_Input) =:= length(P2_Input) ->
   deduce(P1_Input, P2_Input, 0, 0, 0);
 
 play(P1_Input, P2_Input) when length(P1_Input) =/= length(P2_Input) ->
   size_mismatch.
 
-deduce(_, _, P1_Wins, P2_Wins, Ties) when P1_Wins == 3; P2_Wins == 3 ->
+deduce(_, _, P1_Wins, P2_Wins, Ties) when P1_Wins == ?WINNING_SCORE; P2_Wins == ?WINNING_SCORE ->
   {P1_Wins, P2_Wins, Ties};
 
 deduce([H1 | T1], [H2 | T2], P1_Wins, P2_Wins, Ties) ->
