@@ -1,6 +1,17 @@
--module(my_list).
+-module(my_lists).
 
--export([distinct/1, member_of/2, reverse/1, sort/1, index_of/2, occurrence/2, first_non_repeating_element/1]).
+-export([
+  distinct/1,
+  member_of/2,
+  reverse/1,
+  sort/1,
+  index_of/2,
+  occurrence/2,
+  first_non_repeating_element/1,
+  dropwhile/2,
+  foldl/3,
+  all/2,
+  mapfoldl/3]).
 
 %% distinct values api
 
@@ -99,3 +110,41 @@ first_non_repeating_element([H | T], Initial) ->
 first_non_repeating_element([], []) ->
   list_is_empty.
 
+%% dropwhile api
+
+dropwhile(P, [H | T] = Rest) ->
+  case P(H) of
+    true -> dropwhile(P, T);
+    false -> Rest
+  end.
+
+%% foldl api
+%% example -> my_lists:foldl(fun(A, X) -> A+X end, 0, [1,2,3,4,5,6]).
+
+foldl(P, A, [H | T]) ->
+  foldl(P, P(A, H), T);
+
+foldl(_, A, []) ->
+  A.
+
+%% all api
+
+all(P, [H | T]) ->
+  case P(H) of
+    true -> all(P, T);
+    false -> false
+  end;
+
+all(_, []) ->
+  true.
+
+%% mapfoldl api
+%% example -> my_lists:mapfoldl(fun(X, S) -> {2*X, X+S} end, 0, [1,2,3,4,5]).
+
+mapfoldl(_, A, [])
+  -> {[], A};
+
+mapfoldl(F, A, [H | T]) ->
+  {R, A1} = F(H, A),
+  {Rs, A2} = mapfoldl(F, A1, T),
+  {[R | Rs], A2}.
