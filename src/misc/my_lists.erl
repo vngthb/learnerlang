@@ -4,14 +4,16 @@
   distinct/1,
   member_of/2,
   reverse/1,
-  sort/1,
+  selection_sort/1,
+  filter_sort/1,
   index_of/2,
   occurrence/2,
   first_non_repeating_element/1,
   dropwhile/2,
   foldl/3,
   all/2,
-  mapfoldl/3]).
+  mapfoldl/3
+]).
 
 %% distinct values api
 
@@ -51,22 +53,38 @@ reverse([], Temp) ->
 
 %% sort api
 
-sort([H | T]) ->
-  sort(T, H, [], []);
+selection_sort([H | T]) ->
+  selection_sort(T, H, [], []);
 
-sort([]) ->
+selection_sort([]) ->
   [].
 
-sort([], Current, Temp, [H | T]) ->
-  sort(T, H, [Current | Temp], []);
+selection_sort([], Current, Temp, [H | T]) ->
+  selection_sort(T, H, [Current | Temp], []);
 
-sort([H | T], Current, Temp, Leftover) ->
-  if H =< Current -> sort(T, Current, Temp, [H | Leftover]);
-    H > Current -> sort(T, H, Temp, [Current | Leftover])
+selection_sort([H | T], Current, Temp, Leftover) ->
+  if H =< Current -> selection_sort(T, Current, Temp, [H | Leftover]);
+    H > Current -> selection_sort(T, H, Temp, [Current | Leftover])
   end;
 
-sort([], Current, Temp, []) ->
+selection_sort([], Current, Temp, []) ->
   [Current | Temp].
+
+%% sort 2 api
+
+filter_sort(L) ->
+  filter_sort(L, []).
+
+filter_sort([H | T] = L, A) ->
+  S = [X || X <- L, H > X],
+  B = [X || X <- L, H =< X],
+  if
+    S == [] -> filter_sort(T, A ++ [H]);
+    S =/= [] -> filter_sort(S ++ B, A)
+  end;
+
+filter_sort([], A) ->
+  A.
 
 %% element occurrence api
 
