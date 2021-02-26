@@ -1,0 +1,1 @@
+-record(wallet, {account_id, id, balance, status}).

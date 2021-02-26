@@ -1,0 +1,1 @@
+-record(account, {id, email, password, status}).
