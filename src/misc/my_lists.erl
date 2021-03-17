@@ -13,7 +13,7 @@
   foldl/3,
   all/2,
   mapfoldl/3
-]).
+  , size_of/1]).
 
 %% distinct values api
 
@@ -144,7 +144,6 @@ foldl(P, A, [H | T]) ->
 
 foldl(_, A, []) ->
   A.
-
 %% all api
 
 all(P, [H | T]) ->
@@ -162,7 +161,18 @@ all(_, []) ->
 mapfoldl(_, A, [])
   -> {[], A};
 
-mapfoldl(F, A, [H | T]) ->
-  {R, A1} = F(H, A),
-  {Rs, A2} = mapfoldl(F, A1, T),
+mapfoldl(P, A, [H | T]) ->
+  {R, A1} = P(H, A),
+  {Rs, A2} = mapfoldl(P, A1, T),
   {[R | Rs], A2}.
+
+size_of(L) ->
+  size_of(L, 0).
+
+size_of([_H | T] = L, C) ->
+  if L =/= [] -> size_of(T, C + 1);
+    L == [] -> C
+  end;
+
+size_of([], C) ->
+  C.

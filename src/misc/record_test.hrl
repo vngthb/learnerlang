@@ -1,0 +1,2 @@
+-record(person, {id, name, address, job}).
+-record(job, {name, rank}).
