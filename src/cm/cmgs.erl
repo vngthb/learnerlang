@@ -40,14 +40,20 @@ handle_cast({water, _Sugar}, {idle, Resources}) ->
     Result == failure -> {noreply, {maintenance, Resources}}
   end;
 handle_cast({Drink, Sugar}, {idle, Resources}) ->
-  Recipe = get_recipe(Drink),
-  {Result, NewResources} = if
-                             Sugar == true -> prepare(Resources, Recipe);
-                             Sugar == false -> prepare(Resources, Recipe#odata{sugar = 0})
-                           end,
-  if
-    Result == ready -> {noreply, {idle, NewResources}};
-    Result == failure -> {noreply, {maintenance, Resources}}
+  try
+    Recipe = get_recipe(Drink),
+    {Result, NewResources} = if
+                               Sugar == true -> prepare(Resources, Recipe);
+                               Sugar == false -> prepare(Resources, Recipe#odata{sugar = 0})
+                             end,
+    if
+      Result == ready -> {noreply, {idle, NewResources}};
+      Result == failure -> {noreply, {maintenance, Resources}}
+    end
+  catch
+    _ ->
+      io:fwrite("oops"),
+      {noreply, {idle, Resources}}
   end;
 handle_cast(_Request, Status) ->
   {noreply, Status}.
@@ -99,7 +105,8 @@ get_recipe(Drink) ->
     water -> #odata{name = water, water = 100, milk = 0, coffee = 0, sugar = 0};
     espresso -> #odata{name = espresso, water = 100, milk = 0, coffee = 50, sugar = 5};
     cappuccino -> #odata{name = cappuccino, water = 0, milk = 50, coffee = 200, sugar = 5};
-    latte -> #odata{name = latte, water = 0, milk = 300, coffee = 50, sugar = 5}
+    latte -> #odata{name = latte, water = 0, milk = 300, coffee = 50, sugar = 5};
+    _ -> throw(not_found)
   end.
 
 initial_resources() ->
